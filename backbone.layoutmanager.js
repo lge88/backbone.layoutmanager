@@ -16,6 +16,11 @@ var Backbone = window.Backbone;
 var _ = window._;
 var $ = window.$;
 
+// CommonJS pattern:
+Backbone || (Backbone = require('backbone'));
+_ || (_ = require('underscore'));
+$ || ($ = require('jquery'));
+
 // Maintain references to the two `Backbone.View` functions that are
 // overwritten so that they can be proxied.
 var _configure = Backbone.View.prototype._configure;
