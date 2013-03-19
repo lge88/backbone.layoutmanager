@@ -12,14 +12,9 @@
 var keys;
 
 // Localize global dependency references.
-var Backbone = window.Backbone;
-var _ = window._;
-var $ = Backbone.$;
-
-// CommonJS pattern:
-Backbone || (Backbone = require('backbone'));
-_ || (_ = require('underscore'));
-$ || ($ = require('jquery'));
+var Backbone = window.Backbone || require('backbone');
+var _ = window._ || require('underscore');
+var $ = Backbone.$ || require('jquery');
 
 // Maintain references to the two `Backbone.View` functions that are
 // overwritten so that they can be proxied.
