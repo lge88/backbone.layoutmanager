@@ -139,6 +139,39 @@ asyncTest("render inside defined partial", function() {
   });
 });
 
+asyncTest("Subclassed view uses correct template when rendered.", function() {
+  expect(1);
+
+  var layout = new Backbone.Layout();
+  var BaseView = Backbone.View.extend({
+    template: function() {
+      return "Base view template";
+    },
+    manage: true
+  });
+
+  var templateFunction = function() {
+    return 'Extended view template';
+  };
+
+  var ExtendedBaseView = BaseView.extend({
+    constructor: function() {
+      this.template = templateFunction;
+      BaseView.prototype.constructor.apply(this, arguments); 
+    }
+  });
+
+  layout.setView("", new ExtendedBaseView());
+
+  layout.render().then(function() {
+    var view = layout.getView("");
+    var contents = testUtil.trim(this.$el.text());
+      
+    equal(contents, "Extended view template", "Correct template is used");
+    start();
+  });
+});
+
 asyncTest("re-render a view defined after initialization", function(){
   expect(2);
 
@@ -1351,17 +1384,21 @@ test("getView should accept a selector name too", 3, function() {
   equal(view.getViews("c").value().length, 2, "Two Views returned from getViews");
 });
 
-test("getView should accept a `_.where` object too", 3, function() {
+// https://github.com/tbranyen/backbone.layoutmanager/issues/302
+test("getView should accept a `_.where` object too", 4, function() {
   var view = new Backbone.Layout();
 
   var model = new Backbone.Model();
+  var model2 = new Backbone.Model();
 
   var a = view.setView("a", new Backbone.Layout({ model: model }));
   var b = view.setView("b", new Backbone.Layout({ id: 4 }));
+  var d = view.setView("d", new Backbone.Layout({ model: model2 }));
   view.insertView("c", new Backbone.Layout({ model: model }));
   view.insertView("c", new Backbone.Layout({ id: 4 }));
 
   equal(view.getView({ model: model }), a, "Single getView returns single view");
+  equal(view.getView({ model: model2 }), d, "Single getView returns single view");
   equal(view.getViews({ id: 4 }).first().value(), b, "Using getViews will return the single view in an array");
   equal(view.getViews({ id: 4 }).value().length, 2, "Two Views returned from getViews");
 });
@@ -1858,4 +1895,24 @@ test("`el: false` with rerendering inserted child views doesn't replicate views"
   ];
 
   equal(view.$el.html(), expected.join(''), "the same HTML");
+});
+
+test("`el: false` with non-container element will not be duplicated", 2, function() {
+  var expected = "<p>Paragraph 1</p><p>Paragraph 2</p>",
+    layout = new Backbone.Layout({
+      template: _.template('<div class="layout"><div class="content"></div></div>')
+    }),
+    view = new Backbone.Layout({
+      el: false,
+      template: _.template(expected)
+    });
+
+  layout.setViews({
+    ".content": view
+  }).render().done(function() {
+    equal(layout.$(".content").html(), expected);
+    view.render().done(function() {
+        equal(layout.$(".content").html(), expected);
+    });
+  });
 });

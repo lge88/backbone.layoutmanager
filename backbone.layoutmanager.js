@@ -1,5 +1,5 @@
 /*!
- * backbone.layoutmanager.js v0.8.4
+ * backbone.layoutmanager.js v0.8.5
  * Copyright 2013, Tim Branyen (@tbranyen)
  * backbone.layoutmanager.js may be freely distributed under the MIT license.
  */
@@ -14,7 +14,7 @@ var keys;
 // Localize global dependency references.
 var Backbone = window.Backbone;
 var _ = window._;
-var $ = window.$;
+var $ = Backbone.$;
 
 // CommonJS pattern:
 Backbone || (Backbone = require('backbone'));
@@ -81,7 +81,7 @@ var LayoutManager = Backbone.View.extend({
     // second argument will be used instead.  This is to allow
     // `getViews(undefined, fn)` to work as `getViews(fn)`.  Useful for when
     // you are allowing an optional selector.
-    if (typeof fn !== "function" && typeof fn !== "string") {
+    if (fn == null) {
       fn = arguments[1];
     }
 
@@ -412,7 +412,11 @@ var LayoutManager = Backbone.View.extend({
         // If no container is specified, we must replace the content.
         if (manager.noel) {
           // Hold a reference to created element as replaceWith doesn't return new el.
-          renderedEl = root.$el.html(rendered).children();
+          renderedEl = $(rendered);
+
+          // Remove extra root elements
+          root.$el.slice(1).remove();
+
           root.$el.replaceWith(renderedEl);
           // Don't delegate events here - we'll do that in resolve()
           root.setElement(renderedEl, false);
@@ -736,9 +740,6 @@ var LayoutManager = Backbone.View.extend({
       // Ensure the template is mapped over.
       } else if (view.template) {
         options.template = view.template;
-
-        // Remove it from the instance.
-        delete view.template;
       }
     });
   }
@@ -747,7 +748,7 @@ var LayoutManager = Backbone.View.extend({
 // Convenience assignment to make creating Layout's slightly shorter.
 Backbone.Layout = LayoutManager;
 // Tack on the version.
-LayoutManager.VERSION = "0.8.4";
+LayoutManager.VERSION = "0.8.5";
 
 // Override _configure to provide extra functionality that is necessary in
 // order for the render function reference to be bound during initialize.
