@@ -1,6 +1,9 @@
 {
-  "name": "layoutmanager",
+  "name": "backbone.layoutmanager",
+  "repo": "lge88/backbone.layoutmanager",
+  "upstream": "git://github.com/tbranyen/backbone.layoutmanager.git",
   "version": "0.8.4",
+  "scripts": ["backbone.layoutmanager.js"],
   "main": "backbone.layoutmanager.js",
   "dependencies": {
     "jquery": ">=1.6",
