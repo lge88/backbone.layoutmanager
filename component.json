@@ -6,8 +6,8 @@
   "scripts": ["backbone.layoutmanager.js"],
   "main": "backbone.layoutmanager.js",
   "dependencies": {
-    "jquery": ">=1.6",
-    "underscore": "~1.4",
-    "backbone": "~0.9"
+    "lge88/jquery": "*",
+    "lge88/underscore": "*",
+    "lge88/backbone": "*"
   }
 }
